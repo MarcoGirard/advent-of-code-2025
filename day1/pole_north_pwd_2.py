@@ -1,4 +1,4 @@
-import pprint
+#!/usr/bin/env python3
 
 
 def get_input():
@@ -15,11 +15,15 @@ def main():
     for m in moves:
         direction, steps = m[0], int(m[1:])
         if direction == "L":
-            curr_pos = (curr_pos - steps) % 100
+            inter_pos = curr_pos - steps
         elif direction == "R":
-            curr_pos = (curr_pos + steps) % 100
-        if curr_pos == 0:
-            zero_count += 1
+            inter_pos = curr_pos + steps
+
+        spin = abs(inter_pos // 100)
+        curr_pos = inter_pos % 100
+        zero_count += spin
+        # if curr_pos == 0:
+        #     zero_count += 1
 
     print("Pwd: ", zero_count)
 
