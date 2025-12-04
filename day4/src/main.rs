@@ -43,30 +43,38 @@ fn count_around(rolls: &Vec<Vec<char>>, row: &usize, col: &usize) -> u8 {
     count
 }
 
-fn count_accessible_rolls(rolls: &Vec<Vec<char>>) -> u128 {
+fn count_accessible_rolls(rolls: &mut Vec<Vec<char>>, sum: &mut u32) -> Result<(), &'static str> {
     let mut roll_count = 0;
 
     for row in 0..rolls.len() {
         for col in 0..rolls[0].len() {
-            if rolls[row][col] == '.' {
-                print!("{}", rolls[row][col]);
+            if rolls[row][col] == '.' || rolls[row][col] == 'x' {
+                // print!("{}", rolls[row][col]);
                 continue;
             }
             if count_around(&rolls, &row, &col) < 4 {
-                print!("x");
+                // print!("x");
                 roll_count += 1;
+                rolls[row][col] = 'x';
             } else {
-                print!("{}", rolls[row][col]);
+                // print!("{}", rolls[row][col]);
             }
         }
-        print!("\n");
+        // print!("\n");
     }
-    roll_count
+    if roll_count > 0 {
+        *sum += roll_count;
+        println!("{sum}");
+        Ok(())
+    } else {
+        Err("No more")
+    }
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let rolls_map = get_rolls_map()?;
-    let sum = count_accessible_rolls(&rolls_map);
+    let mut rolls_map = get_rolls_map()?;
+    let mut sum: u32 = 0;
+    while count_accessible_rolls(&mut rolls_map, &mut sum).is_ok() {}
     println!("The number of accessible rolls is: {}", sum);
     Ok(())
 }
