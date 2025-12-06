@@ -1,58 +1,50 @@
-use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
 
 #[derive(Debug)]
 struct Operation {
-    operands: Vec<u64>,
+    operands: Vec<String>,
     operator: String,
 }
 
 fn get_operations() -> io::Result<Vec<Operation>> {
-    let file = File::open("./data/input.txt")?;
-    let mut reader = BufReader::new(file);
-    let mut reader = reader
+    let file = File::open("./data/input_test.txt")?;
+    let reader = BufReader::new(file);
+    let input_grid: Vec<Vec<char>> = reader
         .lines()
-        .map(|line| line.expect("Failed to read line"));
-    let mut operations: Vec<Operation> = reader
-        .next()
-        .unwrap()
-        .split_whitespace()
-        .map(|val| {
-            let val = val.parse::<u64>().unwrap();
-            Operation {
-                operands: vec![val],
-                operator: " ".to_string(),
+        .map(|line| {
+            let line = line.unwrap();
+            let mut vals: Vec<char> = Vec::new();
+            for c in line.chars() {
+                vals.push(c);
             }
+            vals
         })
         .collect();
-    for (line_nb, line) in reader.enumerate() {
-        for (i, val) in line.split_whitespace().enumerate() {
-            let mut op: &mut Operation = operations.get_mut(i).expect("Should be there");
-            match val.parse::<u64>() {
-                Ok(num) => {
-                    op.operands.push(num);
-                }
-                Err(_) => {
-                    op.operator = val.to_string();
-                }
-            }
+    let w = input_grid.len();
+    let h = input_grid[0].len();
+    for row in (0..h).rev() {
+        for col in (0..w) {
+            print!("{}", input_grid[col][row]);
         }
+        print!("\n");
     }
+    let operations: Vec<Operation> = Vec::new();
     Ok(operations)
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let operations = get_operations()?;
-    let mut running_sum = 0;
+    // let mut running_sum = 0;
     for op in operations {
-        if op.operator == "*" {
-            running_sum += op.operands.iter().fold(1, |acc, x| acc * x);
-        }
-        if op.operator == "+" {
-            running_sum += op.operands.iter().fold(0, |acc, x| acc + x);
-        }
+        println!("{op:?}");
+        // if op.operator == "*" {
+        //     running_sum += op.operands.iter().fold(1, |acc, x| acc * x);
+        // }
+        // if op.operator == "+" {
+        //     running_sum += op.operands.iter().fold(0, |acc, x| acc + x);
+        // }
     }
-    println!("Running sum : {running_sum}");
+    // println!("Running sum : {running_sum}");
     Ok(())
 }
