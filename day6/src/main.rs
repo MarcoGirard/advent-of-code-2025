@@ -18,6 +18,7 @@ impl Operation {
 
 fn get_operations() -> io::Result<Vec<Operation>> {
     let file = File::open("./data/input_test.txt")?;
+
     let reader = BufReader::new(file);
     let input_grid: Vec<Vec<char>> = reader
         .lines()
@@ -44,9 +45,10 @@ fn get_operations() -> io::Result<Vec<Operation>> {
                     curr_op.operator = curr_char.to_string();
                     only_space = false
                 }
+                ' ' => {}
                 _ => match curr_char.to_string().parse::<u64>() {
                     Ok(num) => {
-                        curr_op.operands.push(num);
+                        tmp_str.push(curr_char);
                         only_space = false
                     }
                     Err(_) => {
@@ -61,24 +63,26 @@ fn get_operations() -> io::Result<Vec<Operation>> {
         if only_space {
             operations.push(curr_op);
             curr_op = Operation::new();
+        } else {
+            curr_op.operands.push(tmp_str.parse::<u64>().unwrap());
+            tmp_str = String::new();
         }
-        print!("\n");
     }
     Ok(operations)
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let operations = get_operations()?;
-    // let mut running_sum = 0;
+    let mut running_sum = 0;
     for op in operations {
-        println!("{op:?}");
-        // if op.operator == "*" {
-        //     running_sum += op.operands.iter().fold(1, |acc, x| acc * x);
-        // }
-        // if op.operator == "+" {
-        //     running_sum += op.operands.iter().fold(0, |acc, x| acc + x);
-        // }
+        println!("{:?}", op.operands);
+        if op.operator == "*" {
+            running_sum += op.operands.iter().fold(1, |acc, x| acc * x);
+        }
+        if op.operator == "+" {
+            running_sum += op.operands.iter().fold(0, |acc, x| acc + x);
+        }
     }
-    // println!("Running sum : {running_sum}");
+    println!("Running sum : {running_sum}");
     Ok(())
 }
