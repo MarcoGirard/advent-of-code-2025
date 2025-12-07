@@ -18,10 +18,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             beams.insert(i);
         }
     }
-    let mut split_count: usize = 0;
-    let mut beams_len = beams.len();
+    let mut possibilities: usize = 0;
     for line in 1..input.len() {
-        println!("{beams:?}");
         for (i, c) in input[line].chars().enumerate() {
             if c == '^' && beams.contains(&i) {
                 beams.remove(&i);
@@ -30,10 +28,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 split_count += 1;
             }
         }
-        print!("\n");
-        // split_count += beams.len() - beams_len; // that's how many were added on that line
+        possibilities *= beams.len() - beams_len; // that's how many were added on that line
         beams_len = beams.len();
     }
-    println!("{split_count}");
+    println!("{possibilities}");
     Ok(())
 }
