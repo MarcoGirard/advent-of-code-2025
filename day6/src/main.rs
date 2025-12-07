@@ -17,7 +17,7 @@ impl Operation {
 }
 
 fn get_operations() -> io::Result<Vec<Operation>> {
-    let file = File::open("./data/input_test.txt")?;
+    let file = File::open("./data/input.txt")?;
 
     let reader = BufReader::new(file);
     let input_grid: Vec<Vec<char>> = reader
@@ -40,6 +40,7 @@ fn get_operations() -> io::Result<Vec<Operation>> {
         let mut only_space = true;
         for col in 0..w {
             let curr_char = input_grid[col][row];
+            print!("{curr_char}");
             match curr_char {
                 '+' | '*' => {
                     curr_op.operator = curr_char.to_string();
@@ -61,13 +62,17 @@ fn get_operations() -> io::Result<Vec<Operation>> {
             }
         }
         if only_space {
+            println!("Pushing {:?}", curr_op);
             operations.push(curr_op);
             curr_op = Operation::new();
         } else {
             curr_op.operands.push(tmp_str.parse::<u64>().unwrap());
             tmp_str = String::new();
         }
+
+        print!("\n");
     }
+    operations.push(curr_op);
     Ok(operations)
 }
 
