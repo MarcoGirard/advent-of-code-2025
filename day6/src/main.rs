@@ -3,8 +3,17 @@ use std::io::{self, BufRead, BufReader};
 
 #[derive(Debug)]
 struct Operation {
-    operands: Vec<String>,
+    operands: Vec<u64>,
     operator: String,
+}
+
+impl Operation {
+    fn new() -> Operation {
+        Operation {
+            operands: Vec::new(),
+            operator: String::new(),
+        }
+    }
 }
 
 fn get_operations() -> io::Result<Vec<Operation>> {
@@ -21,15 +30,40 @@ fn get_operations() -> io::Result<Vec<Operation>> {
             vals
         })
         .collect();
+    let mut operations: Vec<Operation> = Vec::new();
     let w = input_grid.len();
     let h = input_grid[0].len();
+    let mut curr_op = Operation::new();
     for row in (0..h).rev() {
-        for col in (0..w) {
-            print!("{}", input_grid[col][row]);
+        let mut tmp_str = String::new();
+        let mut only_space = true;
+        for col in 0..w {
+            let curr_char = input_grid[col][row];
+            match curr_char {
+                '+' | '*' => {
+                    curr_op.operator = curr_char.to_string();
+                    only_space = false
+                }
+                _ => match curr_char.to_string().parse::<u64>() {
+                    Ok(num) => {
+                        curr_op.operands.push(num);
+                        only_space = false
+                    }
+                    Err(_) => {
+                        eprintln!(
+                            "You did not take that into account didn't you? {}",
+                            curr_char
+                        );
+                    }
+                },
+            }
+        }
+        if only_space {
+            operations.push(curr_op);
+            curr_op = Operation::new();
         }
         print!("\n");
     }
-    let operations: Vec<Operation> = Vec::new();
     Ok(operations)
 }
 
